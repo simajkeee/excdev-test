@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class CreateUserAccountCommand extends Command
 {
@@ -69,7 +70,7 @@ class CreateUserAccountCommand extends Command
             $this->error('User not found.');
 
             return self::FAILURE;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error('Failed to create account: ' . $e->getMessage());
 
             return self::FAILURE;
