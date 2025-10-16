@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\Roles;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
 class CreateUserCommand extends Command
 {
-    protected $signature = 'user:create';
+    protected $signature = 'user:create {--admin}';
     protected $description = 'Creates a new user interactively.';
 
     public function handle()
@@ -23,10 +24,12 @@ class CreateUserCommand extends Command
             return self::FAILURE;
         }
 
+        $role = $this->option('admin') ? Roles::ADMIN : Roles::USER;
         User::create([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
+            'role' => $role,
         ]);
 
         $this->info('User created successfully!');
