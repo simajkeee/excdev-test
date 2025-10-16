@@ -24,7 +24,7 @@ class CreateUserCommand extends Command
             return self::FAILURE;
         }
 
-        $role = $this->option('admin') ? Roles::ADMIN : Roles::USER;
+        $role = $this->option('admin') ? Roles::ADMIN : Roles::ACCOUNT_OWNER;
         User::create([
             'name' => $name,
             'email' => $email,
