@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\TransactionJob;
 use App\Models\Account;
-use App\Models\Transaction;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 use Throwable;
 
 class AccountTransactionCommand extends Command
@@ -35,28 +35,20 @@ class AccountTransactionCommand extends Command
                 ->firstOrFail();
 
             $amount = $this->ask('Enter transaction amount');
-            $amount = str_replace(',', '.', $amount);
-            if (!is_numeric($amount) || $amount == 0.0) {
-                $this->error('Invalid type of value');
-
-                return self::FAILURE;
-            };
+            if (is_string($amount) && str_contains($amount, ',')) {
+                $amount = str_replace(',', '.', $amount);
+            }
+            if (!is_numeric($amount)) {
+                throw new InvalidArgumentException('Invalid type of value');
+            }
+            $amount = round((float)$amount, 2);
+            if ($amount == 0.0) {
+                throw new InvalidArgumentException('Amount can\'t be zero');
+            }
 
             $description = $this->ask('Enter transaction description');
 
-            $transaction = DB::transaction(function () use ($account, $amount, $description) {
-                $newBalance = $account->balance + $amount;
-                $account->balance = $newBalance;
-                $account->save();
-
-                return Transaction::create([
-                    'account_id' => $account->id,
-                    'amount' => $amount,
-                    'description' => $description,
-                ]);
-            });
-
-            $this->info("Created transaction #{$transaction->id} with amount {$transaction->amount}");
+            TransactionJob::dispatch($amount, $account->id, $description ?? '');
 
             return self::SUCCESS;
         } catch (ModelNotFoundException $e) {

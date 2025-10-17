@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Roles;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -53,6 +54,13 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+        ]);
+    }
+
+    public function withAdminRole(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'role' => Roles::ADMIN,
         ]);
     }
 }
