@@ -6,6 +6,7 @@ use App\Jobs\TransactionJob;
 use App\Models\Account;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Throwable;
 
@@ -52,11 +53,15 @@ class AccountTransactionCommand extends Command
 
             return self::SUCCESS;
         } catch (ModelNotFoundException $e) {
-            $this->error('Account not found');
+            $msg = 'Account not found';
+            $this->error($msg);
+            Log::error($msg);
 
             return self::FAILURE;
         } catch (Throwable $e) {
-            $this->error('Failed to create transaction: ' . $e->getMessage());
+            $msg = 'Failed to create transaction: ' . $e->getMessage();
+            $this->error($msg);
+            Log::error($msg);
 
             return self::FAILURE;
         }
