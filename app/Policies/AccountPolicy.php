@@ -3,34 +3,26 @@
 namespace App\Policies;
 
 use App\Enums\Roles;
-use App\Models\Transaction;
+use App\Models\Account;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
-class TransactionPolicy
+class AccountPolicy
 {
-    public function before(User $user, $ability)
-    {
-        if ($user->isAdmin()) {
-            return true;
-        }
-
-        return null;
-    }
-
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(User $currentUser, User $targetUser): bool
+    public function viewAny(User $authUser, User $endpointUser): bool
     {
-        return $currentUser->role === Roles::ACCOUNT_OWNER && $currentUser->id === $targetUser->id;
+        return $authUser->id === $endpointUser->id;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Transaction $transaction): bool
+    public function view(User $user, Account $account): bool
     {
-        return false;
+        return $user->id === $account->user_id;
     }
 
     /**
@@ -44,7 +36,7 @@ class TransactionPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Transaction $transaction): bool
+    public function update(User $user, Account $account): bool
     {
         return false;
     }
@@ -52,7 +44,7 @@ class TransactionPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Transaction $transaction): bool
+    public function delete(User $user, Account $account): bool
     {
         return false;
     }
@@ -60,7 +52,7 @@ class TransactionPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Transaction $transaction): bool
+    public function restore(User $user, Account $account): bool
     {
         return false;
     }
@@ -68,7 +60,7 @@ class TransactionPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Transaction $transaction): bool
+    public function forceDelete(User $user, Account $account): bool
     {
         return false;
     }

@@ -40,25 +40,26 @@
 </template>
 
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import { PaginatedEntriesModel } from '@/types/models/pagination';
 import api from '@/services/api';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     userId: number;
-}>();
+    limit?: number
+}>(), {
+    limit: 5,
+});
 
 const paginatedTransactions = ref<PaginatedEntriesModel | null>(null);
+const defaultOptions = { params: { limit: props.limit } };
 
-onMounted(async () => {
-    const { data } = await api.get(`/users/${props.userId}/transactions`);
-
-    paginatedTransactions.value = data satisfies PaginatedEntriesModel;
+onMounted(() => {
+    go(`/users/${props.userId}/transactions`);
 });
 
 async function go(url: string, options?: any) {
-    const { data } = await api.get(url);
+    const { data } = await api.get(url, { ...defaultOptions, ...options});
 
     paginatedTransactions.value = data satisfies PaginatedEntriesModel;
 }
