@@ -1,5 +1,6 @@
 import { InertiaLinkProps } from '@inertiajs/vue3';
 import type { LucideIcon } from 'lucide-vue-next';
+import { USER_ROLES } from '@/constants/appConstants';
 
 export interface Auth {
     user: User;
@@ -26,10 +27,13 @@ export type AppPageProps<
     sidebarOpen: boolean;
 };
 
+export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+
 export interface User {
     id: number;
     name: string;
     email: string;
+    role: UserRole
     avatar?: string;
     email_verified_at: string | null;
     created_at: string;
